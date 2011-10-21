@@ -1,0 +1,407 @@
+
+\documentclass[landscape, 12pt]{article}
+\usepackage{Sweave}
+\usepackage[cm,empty]{fullpage}
+\usepackage[OT1]{fontenc}
+\usepackage{hyperref}
+\usepackage[section]{placeins}
+\usepackage{graphicx}
+\usepackage{color}
+
+
+\begin{document}
+
+\title{DWD Application on Simulated Two-class Data}
+%%================================================
+%% DWDExamples/R/simu2Example.R
+%%================================================
+\author{Xiaosun Lu}
+\maketitle
+\thispagestyle{empty}
+
+<<echo=FALSE, eval=TRUE, results=tex>>=
+require(xtable)
+load("rdata/simu2Workspace.RData")
+options(scipen=100000000)
+
+@
+
+%===================================================
+\begin{itemize}
+\item Generate data with two classes from random normal distribution N(0, 1).
+\item The sample size of each group is 100, and the dimension is 1000.
+\item The class mean in the first dimension is shifted to +2.53 (-2.53 resp.). 
+\item Hanwen's DWD result is almost identical to Jason's, but much faster.
+\item The OOB error rate of Random Forest is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+a = rfPredErrorRate
+attr(a,"names")=""
+print(a)
+@
+, and the running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+a = rfRunningTime
+attr(a,"names")=""
+print(a)
+@
+s.
+\item SVM and LDA are also performed and compared with Hanwen's DWD result. 
+\end{itemize}
+%===================================================
+\newpage
+View the original data.
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.5\textwidth]
+{output/simu2_originPlotMatrix.pdf}
+\caption{Scatterplots. }
+\end{center}
+\end{figure}
+%===================================================
+\newpage
+Rotate the point cloud onto PC directions.
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.5\textwidth]
+{output/simu2_pcaPlotMatrix.pdf}
+\caption{Data projection onto PC directions. }
+\end{center}
+\end{figure}
+
+%===================================================
+\newpage
+\begin{itemize}
+\item Two-class DWD classification
+\item The angle between the DWD direction by Jason and that by Hanwen is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+a = angle(rsOpt0.list$dwdDir, rsOpt1.list$dwdDir, lessThan90=TRUE)
+a = round(a,digits=8)
+attr(a,"names")=""
+print(a)
+@
+ degree.
+\item Jason's DWD running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsOpt1.list$dwdRunningTime
+attr(t,"names")=""
+print(t)
+@
+ s, and Hanwen's is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsOpt0.list$dwdRunningTime
+attr(t,"names")=""
+print(t)
+@
+ s.
+\end{itemize}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight,]
+{output/simu2_1.pdf}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight]
+{output/simu2_0.pdf}
+\caption{DWD classification. The left is Jason's result. The right is Hanwen's result. }
+\end{center}
+\end{figure}
+%===================================================
+\newpage
+\begin{itemize}
+\item Cross-validation to compare Hanwen's and Jason's DWD ( nrep=100, 80\% trained) 
+\item Jason's prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.j),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.j.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+.
+\item Hanwen's prediction error rate is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.h),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.h.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+.  
+\item The angle between Jason's and Hanwen's DWD direction is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$angleDiff.j),digits=8)
+attr(r,"names")=c("")
+print(r)
+@
+ degree, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$angleDiff.j.CI,digits=8)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+\end{itemize}
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight,page=1]
+{output/simu2_cv.pdf}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight,page=2]
+{output/simu2_cv.pdf}
+\caption{ DWD classification. The left is the distribution of angle difference between Jason's 
+and Hanwen's DWD directions. The right shows the angle differences and the prediction errors 
+during the cross-validation. }
+\end{center}
+\end{figure}
+%===================================================
+\newpage
+\begin{itemize}
+\item Two-class linear SVM classification (Data Piling)
+\item SVM running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsSVM.list$svmRunningTime 
+attr(t,"names")=""
+print(t)
+@
+ s, and Hanwen's DWD running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsOpt0.list$dwdRunningTime
+attr(t,"names")=""
+print(t)
+@
+ s.
+\item CV: nrep=100, 80\% trained.
+\item The angle between linear SVM direction and Hanwen's DWD direction is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$angleDiff.svm),2)
+attr(r,"names")=c("")
+print(r)
+@
+ degree, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$angleDiff.svm.CI,digits=2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+ degree.
+\item The linear SVM prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.svm),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.svm.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+\item Hanwen's DWD prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.h),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.h.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+.
+\end{itemize}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.4\textwidth, height=0.7\textheight,]
+{output/simu2_svm.pdf}
+\includegraphics[keepaspectratio=true, width=0.4\textwidth, height=0.7\textheight]
+{output/simu2_0.pdf}
+\caption{The left is linear SVM classification. The right is Hanwen's DWD classification. }
+\end{center}
+\end{figure}
+
+
+%===================================================
+\newpage
+\begin{itemize}
+\item Two-class LDA classification 
+\item LDA running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsLDA.list$ldaRunningTime
+attr(t,"names")=""
+print(t)
+@
+ s, and Hanwen's DWD running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsOpt0.list$dwdRunningTime
+attr(t,"names")=""
+print(t)
+@
+ s.
+\item CV: nrep=100, 80\% trained.
+\item The angle between LDA direction and Hanwen's DWD direction is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$angleDiff.lda),2)
+attr(r,"names")=c("")
+print(r)
+@
+ degree, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$angleDiff.lda.CI,digits=2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+ degree.
+\item The LDA prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.lda),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.lda.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+\item Hanwen's DWD prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.h),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.h.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+.
+\end{itemize}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.4\textwidth, height=0.7\textheight,]
+{output/simu2_lda.pdf}
+\includegraphics[keepaspectratio=true, width=0.4\textwidth, height=0.7\textheight]
+{output/simu2_0.pdf}
+\caption{The left is LDA classification. The right is Hanwen's DWD classification. }
+\end{center}
+\end{figure}
+%===================================================
+\newpage
+\begin{itemize}
+\item An example of prediction
+\item 80\% training data + 20\% test data
+\item The DWD prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = preddwdError
+attr(r,"names")=c("")
+print(r)
+@
+.
+\end{itemize}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight,]
+{output/simu2_predExample.pdf}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight]
+{output/simu2_dwdPred.pdf}
+\caption{The left shows data on the 1st dimension. The right shows Hanwen's DWD prediction. 
+The color indicates the true classification. The lighter colored points (circular) are 
+from the training data, and the rest from the test data. The symbol of the points from 
+the test data indicates the predicted class. The corss symbol corresponds to the blue 
+group, and the triangle correspondsto the red group. }
+\end{center}
+\end{figure}
+%===================================================
+\newpage
+\begin{itemize}
+\item The same example of prediction: 80\% training data + 20\% test data
+\item DWD is better than SVM in prediction.
+\item The SVM prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = predsvmError
+attr(r,"names")=c("")
+print(r)
+@
+, and the DWD error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = preddwdError
+attr(r,"names")=c("")
+print(r)
+@
+.
+\end{itemize}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight,]
+{output/simu2_svmPred.pdf}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight]
+{output/simu2_dwdPred.pdf}
+\caption{The left shows linear SVM prediction. The right shows Hanwen's DWD prediction. 
+The color indicates the true classification. The lighter colored points (circular) are 
+from the training data, and the rest from the test data. The symbol of the points from 
+the test data indicates the predicted class. The corss symbol corresponds to the blue 
+group, and the triangle correspondsto the red group. }
+\end{center}
+\end{figure}
+%===================================================
+
+\newpage
+\begin{itemize}
+\item The same example of prediction: 80\% training data + 20\% test data
+\item DWD is better than LDA in prediction.
+\item The LDA prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = predldaError
+attr(r,"names")=c("")
+print(r)
+@
+, and the DWD error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = preddwdError
+attr(r,"names")=c("")
+print(r)
+@
+.
+\end{itemize}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight,]
+{output/simu2_ldaPred.pdf}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight]
+{output/simu2_dwdPred.pdf}
+\caption{The left shows LDA prediction. The right shows Hanwen's DWD prediction. 
+The color indicates the true classification. The lighter colored points (circular) are 
+from the training data, and the rest from the test data. The symbol of the points from 
+the test data indicates the predicted class. The corss symbol corresponds to the blue 
+group, and the triangle correspondsto the red group. }
+\end{center}
+\end{figure}
+%===================================================
+
+\end{document}
+
+
+
+
+

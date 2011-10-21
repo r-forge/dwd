@@ -1,0 +1,340 @@
+
+\documentclass[landscape, 12pt]{article}
+\usepackage{Sweave}
+\usepackage[cm,empty]{fullpage}
+\usepackage[OT1]{fontenc}
+\usepackage{hyperref}
+\usepackage[section]{placeins}
+\usepackage{graphicx}
+\usepackage{color}
+
+  \definecolor{purple}{rgb}{0.7,0,1}
+
+
+\begin{document}
+
+\title{DWD Application on Iris Data}
+%%================================================
+%% DWDExamples/R/irisExample.R
+%%================================================
+\author{Xiaosun Lu}
+\maketitle
+\thispagestyle{empty}
+
+<<echo=FALSE, eval=TRUE, results=tex>>=
+require(xtable)
+load("rdata/irisWorkspace.RData")
+options(scipen=100000000)
+@
+
+%===================================================
+\begin{itemize}
+\item Head of the Data
+<<echo=FALSE, eval=TRUE, results=tex>>=
+data(iris)
+
+dataDf = data.frame(iris)
+names(dataDf)[5] = "class"
+
+print(xtable(head(dataDf), digits = 2, label=' '),
+		include.rownames=TRUE)
+@
+\item The Classes
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = as.matrix(t(table(dataDf$class)))
+rownames(t) = "Number"
+print(xtable(t, digits = 2, label=' '),
+        rownames=" f", include.colnames=TRUE)
+
+@
+\end{itemize}
+
+%===================================================
+\newpage
+View the original data.
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.5\textwidth]
+{output/iris_originPlotMatrix.pdf}
+\caption{Scatterplots. }
+\end{center}
+\end{figure}
+%===================================================
+\newpage
+Rotate the point cloud onto PC directions.
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.5\textwidth]
+{output/iris_pcaPlotMatrix.pdf}
+\caption{Data projection onto PC directions. }
+\end{center}
+\end{figure}
+%===================================================
+
+\newpage
+\begin{itemize}
+\item Among all three species, {\color{red}{Versicolor}} and {\color{blue}{Virginica}} are hardest to distinguish.
+\item Only consider classifying {\color{red}{Versicolor}} Vs. {\color{blue}{Virginica}}.
+\item Hanwen's DWD result is almost identical to Jason's, but much faster.
+\item The OOB error rate of Random Forest is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+a = rfPredErrorRate
+attr(a,"names")=""
+print(a)
+@
+, and the running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+a = rfRunningTime
+attr(a,"names")=""
+print(a)
+@
+s.
+\item SVM and LDA are also performed on these two classes and then 
+compared with Hanwen's DWD.
+\end{itemize}
+
+%===================================================
+\newpage
+\begin{itemize}
+\item Two-class DWD classification: {\color{red}{Versicolor}} Vs. {\color{blue}{Virginica}}
+\item The angle between the DWD direction by Jason and that by Hanwen is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+a = angle(rsOpt0.list$dwdDir, rsOpt1.list$dwdDir, lessThan90=TRUE)
+a = round(a,digits=8)
+attr(a,"names")=""
+print(a)
+@
+ degree.
+\item Jason's DWD running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsOpt1.list$dwdRunningTime
+attr(t,"names")=""
+print(t)
+@
+ s, and Hanwen's is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsOpt0.list$dwdRunningTime
+attr(t,"names")=""
+print(t)
+@
+ s.
+\end{itemize}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.4\textwidth, height=0.7\textheight,]
+{output/iris_VersicolorVirginica_1.pdf}
+\includegraphics[keepaspectratio=true, width=0.4\textwidth, height=0.7\textheight]
+{output/iris_VersicolorVirginica_0.pdf}
+\caption{DWD on Iris data for separating versicolor (red) and virginica (blue). 
+The left is Jason's result. The right is Hanwen's result. }
+\end{center}
+\end{figure}
+
+%===================================================
+\newpage
+\begin{itemize}
+\item Cross-validation to compare Hanwen's and Jason's DWD ( nrep=100, 80\% trained) 
+\item Jason's prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.j),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.j.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+.
+\item Hanwen's prediction error rate is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.h),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.h.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+.  
+\item The angle between Jason's and Hanwen's DWD direction is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$angleDiff.j),digits=8)
+attr(r,"names")=c("")
+print(r)
+@
+ degree, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$angleDiff.j.CI,digits=8)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+\end{itemize}
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight,page=1]
+{output/iris_VersicolorVirginica_cv.pdf}
+\includegraphics[keepaspectratio=true, width=0.45\textwidth, height=0.7\textheight,page=2]
+{output/iris_VersicolorVirginica_cv.pdf}
+\caption{ DWD classification. The left is the distribution of angle difference between Jason's 
+and Hanwen's DWD directions. The right shows the angle differences and the prediction errors 
+during the cross-validation. }
+\end{center}
+\end{figure}
+%===================================================
+\newpage
+\begin{itemize}
+\item Two-class linear SVM classification: {\color{red}{Versicolor}} Vs. {\color{blue}{Virginica}}
+\item SVM running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsSVM.list$svmRunningTime 
+attr(t,"names")=""
+print(t)
+@
+ s, and Hanwen's DWD running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsOpt0.list$dwdRunningTime
+attr(t,"names")=""
+print(t)
+@
+ s.
+\item CV: nrep=100, 80\% trained.
+\item The angle between linear SVM direction and Hanwen's DWD direction is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$angleDiff.svm),2)
+attr(r,"names")=c("")
+print(r)
+@
+ degree, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$angleDiff.svm.CI,digits=2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+ degree.
+\item The linear SVM prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.svm),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.svm.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+\item Hanwen's DWD prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.h),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.h.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+.
+\end{itemize}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.4\textwidth, height=0.7\textheight,]
+{output/iris_VersicolorVirginica_svm.pdf}
+\includegraphics[keepaspectratio=true, width=0.4\textwidth, height=0.7\textheight]
+{output/iris_VersicolorVirginica_0.pdf}
+\caption{Linear SVM and DWD on Iris data for separating versicolor (red) and virginica (blue). 
+The left is SVM result. The right is Hanwen's DWD result. }
+\end{center}
+\end{figure}
+%===================================================
+\newpage
+\begin{itemize}
+\item Two-class LDA classification: {\color{red}{Versicolor}} Vs. {\color{blue}{Virginica}}
+\item LDA running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsLDA.list$ldaRunningTime
+attr(t,"names")=""
+print(t)
+@
+ s, and Hanwen's DWD running time is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+t = rsOpt0.list$dwdRunningTime
+attr(t,"names")=""
+print(t)
+@
+ s.
+\item CV: nrep=100, 80\% trained.
+\item The angle between LDA direction and Hanwen's DWD direction is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$angleDiff.lda),2)
+attr(r,"names")=c("")
+print(r)
+@
+ degree, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$angleDiff.lda.CI,digits=2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+ degree.
+\item The LDA prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.lda),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.lda.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+\item Hanwen's DWD prediction error rate is 
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(mean(compare.list$predErrorRate.h),2)
+attr(r,"names")=c("")
+print(r)
+@
+, and the 95\% CI is
+<<echo=FALSE, eval=TRUE, results=tex>>=
+r = round(compare.list$predErrorRate.h.CI,2)
+r = paste("(",r[1],", ",r[2],")",sep="")
+attr(r,"names")=c("")
+print(noquote(r))
+@
+.
+\end{itemize}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[keepaspectratio=true, width=0.4\textwidth, height=0.7\textheight,]
+{output/iris_VersicolorVirginica_lda.pdf}
+\includegraphics[keepaspectratio=true, width=0.4\textwidth, height=0.7\textheight]
+{output/iris_VersicolorVirginica_0.pdf}
+\caption{LDA and DWD on Iris data for separating versicolor (red) and virginica (blue). 
+The left is LDA result. The right is Hanwen's DWD result. }
+\end{center}
+\end{figure}
+
+
+%===================================================
+\end{document}
+
+
+
+
