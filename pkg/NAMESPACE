@@ -1,0 +1,9 @@
+export(
+	"kdwd",
+	"sqlp",
+	"solve_QP_SOCP"
+	)
+importFrom("stats", "fitted", "na.omit", "predict", "terms")
+exportMethods("predict")
+exportClasses("kdwd")
+useDynLib(DWD.so,mexMatvec_c,mexexpand_c,mexqops_c,mexschurfun_c,mextriang_c,mextriangsp_c)
