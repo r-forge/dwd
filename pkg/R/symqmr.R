@@ -37,20 +37,20 @@ symqmr = function(A,b,L,tol,maxit) {
 		}
 	if (nargs() < 4)
 		tol <- 1e-10
-	tolb <- min(1e-4,tol*norm(b))
+	tolb <- min(1e-4,tol*normsvd(b))
 	
 	solve_ok <- 1 
 	x <- zeros(N,1)
 	Aq <- matvec(A,x)
 	r <- b - Aq  
-	err <- norm(r)
+	err <- normsvd(r)
 	resnrm[1] <- err
 	minres <- err
 	xx <- x 
 	if (err < tolb)
 		return
 	q <- precond(A,L,r)
-	tau_old <- norm(q)      
+	tau_old <- normsvd(q)      
 	rho_old <- t(r)%*%q 
 	theta_old <- 0 
 	d <- zeros(N,1) 
@@ -71,7 +71,7 @@ symqmr = function(A,b,L,tol,maxit) {
 			r <- r - alpha*Aq
 		}
 		u <- precond(A,L,r)
-		theta <- norm(u)/tau_old
+		theta <- normsvd(u)/tau_old
 		c <- 1/sqrt(1+theta^2) 
 		tau <- tau_old*theta*c
 		gam <- (c^2*theta_old^2)
@@ -81,7 +81,7 @@ symqmr = function(A,b,L,tol,maxit) {
 		
 		Ad <- gam*Ad + eta[1,1]*Aq
 		res <- res - Ad
-		err <- norm(res)
+		err <- normsvd(res)
 		resnrm[iter+1] <- err 
 		if (err < minres){
 			xx <- x

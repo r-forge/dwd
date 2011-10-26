@@ -7,13 +7,14 @@
 ## Last Modified: 15 Sep 2004
 ##*******************************************************************
 
-NTdirfun=function(blk,A,par,Rd,EinvRc,xx){
+NTdirfun=function(blk,A,par,Rd,EinvRc,xx,global_var){
   
   dX <- list()
   dZ <- list()
   dy <- NULL
   if(any(is.nan(xx)) | any(is.infinite(xx))){
-    solve_ok <<- 0
+    solve_ok <- 0
+    global_var$solve_ok = solve_ok
     print("linsysolve: solution contains NaN or inf.")
     return
   }
@@ -41,6 +42,5 @@ NTdirfun=function(blk,A,par,Rd,EinvRc,xx){
       count <- count + n  
     }
   }
-  
-  return(list(dX=dX,dy=dy,dZ=dZ))
+  return(list(dX=dX,dy=dy,dZ=dZ,global_var=global_var))
 }

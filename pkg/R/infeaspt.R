@@ -12,7 +12,7 @@
 ## Last Modified: 15 Sep 2004
 ##********************************************************************
 
-infeaspt=function(blk,At,C,b,options,scalefac){
+infeaspt=function(blk,At,C,b,options,scalefac,spdensity){
 
   options <- 1
   if (options == 1)
@@ -22,10 +22,10 @@ infeaspt=function(blk,At,C,b,options,scalefac){
   Z0 <- list()
   m <- length(b) 
   
-#  nargin <<- 4
-  myval <- validate(blk,At,C,b)
+  myval <- validate(blk,At,C,b,spdensity=spdensity)
   At <- myval$At
   C <- myval$C
+  spdensity = myval$spdensity
   
   for(p in 1:length(blk$type)){
     blktmp <- blk$size[[p]]

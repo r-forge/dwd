@@ -38,7 +38,7 @@ checkdepconstr =  function(blk,At,b,y,rmdepconstr){
 
   if(!is(AAt,"sparseMatrix"))
     AAt <- as(AAt,"sparseMatrix")
-  pertdiag <- 1e-16*norm(AAt)*ones(m,1)
+  pertdiag <- 1e-16*norm(AAt,"f")*ones(m,1)
   AAt <- AAt + Diagonal(m,pertdiag)
   mychol <- Cholesky(AAt)
   if (class(mychol)=="try-error"){
@@ -68,7 +68,7 @@ checkdepconstr =  function(blk,At,b,y,rmdepconstr){
         print("checkdepconstr: removing dependent constraints...")
         W <- findcoeff(blk,At,idxB,idxN)
         tmp <- tt(W)%*%b[idxB] - b[idxN];
-        nnorm <- norm(tmp)/max(1,norm(b)) 
+        nnorm <- normsvd(tmp)/max(1,normsvd(b)) 
         tol <- 1e-8
         if (nnorm > tol){
           feasible <- 0 

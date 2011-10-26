@@ -25,7 +25,7 @@ detect_ublk = function(blk,At,C){
   for(p in 1:numblk){
     m <- dim(At[[p]])[2]        
     if(blk$type[p]=="l"){
-      r <- qrnorm(m)
+      r <- rnorm(m)
       stime <- proc.time()
       Ap <- t(At[[p]])
       Cp <- C[[p]]

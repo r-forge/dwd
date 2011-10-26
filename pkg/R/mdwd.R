@@ -123,13 +123,13 @@ sepelimmdwd = function(X,y,penalty,wgt){
 	##Solve the SOCP problem
 	
 #	library(Matrix)
-	spdensity <<- NULL
+	spdensity <- NULL
 	OPTIONS = sqlparameters()
 	OPTIONS$maxit = 40
 	OPTIONS$vers = 2
 	OPTIONS$steptol = 1e-10
 	OPTIONS$gaptol = 1e-12
-	initial = infeaspt(blk,Avec,C,b)
+	initial = infeaspt(blk,Avec,C,b,spdensity=spdensity)
 	X0 = initial$X0
 	lambda0 = initial$y0
 	Z0 = initial$Z0
@@ -155,13 +155,13 @@ sepelimmdwd = function(X,y,penalty,wgt){
 		W = Q%*%barW
 	else
 		W = barW
-	normw = norm(as.vector(W))
+	normw = normsvd(as.vector(W))
 	if(normw < 1 - 1e-3) 
 		print(normw) 
 	normwm1 = 0
 	if(normw > 1 - 1e-3){
 		W = W / normw
-		normwm1 = norm(as.vector(W))-1
+		normwm1 = normsvd(as.vector(W))-1
 		beta = beta / normw
 	}
 	
@@ -212,7 +212,7 @@ sepelimmdwd = function(X,y,penalty,wgt){
 	
 	minalp = min(alp)
 	p = t(A1[1:nresid,2:(K*dnew+1)])%*%alp
-	eta = - norm(p)
+	eta = - normsvd(p)
 	gamma = 2 * sqrt(alp*weight[ynew])
 	dualobj = eta + sum(gamma)
 	
@@ -254,12 +254,12 @@ mdwd = function(xMat,yLabel,threshfact=100,wgt=NULL){
 	if (flag == -2){
 		cat("Infeasible or unbounded optimization problem!\n")
 	}
-	dirvec = W/norm(as.vector(W))
-	beta = beta/norm(as.vector(W))
+	dirvec = W/normsvd(as.vector(W))
+	beta = beta/normsvd(as.vector(W))
 	return(list(w=dirvec,beta=beta,obj=obj))
 }
 
-norm = function(aMatrix){
+normsvd = function(aMatrix){
 	##Reqturns the largest singular value of aMatrix
 	o = svd(aMatrix,nu=0,nv=0)
 	return(o$d[1])

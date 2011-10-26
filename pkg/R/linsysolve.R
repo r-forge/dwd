@@ -12,11 +12,20 @@
 ## Last Modified: 15 Sep 2004
 ##***************************************************************
 
-linsysolve = function(schur,UU,Afree,EE,rhs){
+linsysolve = function(schur,UU,Afree,EE,rhs,global_var){
 	
+        iter <- global_var$iter
+        use_LU <- global_var$use_LU
+        printlevel <- global_var$printlevel
+        solve_ok <- global_var$solve_ok
+        nnzmatold <- global_var$nnzmatold
+        depconstr <- global_var$depconstr
+        spdensity <- global_var$spdensity
+        matfct_options <- global_var$matfct_options
+        matfct_options_old <- global_var$matfct_options_old
 	nnzmat <- 0
-	if(iter==1) use_LU <<- 0
-	if(is.null(nnzmatold)) nnzmatold <<- 0
+	if(iter==1) use_LU <- 0
+	if(is.null(nnzmatold)) nnzmatold <- 0
 	
 	## diagonal perturbation, diagonally scale schur
 	
@@ -71,7 +80,7 @@ linsysolve = function(schur,UU,Afree,EE,rhs){
 	
 	rhs = c(rhs,zeros(m+ncolU-length(rhs),1)) 
 	if (ncolU > 300)
-		use_LU <<- 1
+		use_LU <- 1
 	
 	## Cholesky factorization
 	
@@ -81,14 +90,14 @@ linsysolve = function(schur,UU,Afree,EE,rhs){
 	if (!use_LU){
 		nnzmat <- nnzero(coeff$mat11)
 		nnzmatdiff <- (nnzmat != nnzmatold)   
-		solve_ok <<- 1
+		solve_ok <- 1
 		solvesys <- 1 
 		if((nnzmat > spdensity*m^2) | (m < 500)){  
-			matfct_options <<- "chol"
+			matfct_options <- "chol"
 			if(is(schur,"sparseMatrix"))
 				schur <- as.matrix(schur)
 		}else{
-			matfct_options <<- "spchol"
+			matfct_options <- "spchol"
 			if(!is(schur,"sparseMatrix"))
 				schur <- as(schur,"sparseMatrix")
 		}
@@ -100,7 +109,7 @@ linsysolve = function(schur,UU,Afree,EE,rhs){
 			L$L <- chol(schur) 
 			
 			if(class(L$L)=="try-error"){
-				solve_ok <<- -2
+				solve_ok <- -2
 				solvesys <- 0
 				print("  chol: Schur complement matrix not pos. def.")
 			}
@@ -108,7 +117,7 @@ linsysolve = function(schur,UU,Afree,EE,rhs){
 			L$matfct_options <- "spchol"    
 			CX <- Cholesky(schur)
 			if(class(CX)=="try-error"){
-				solve_ok <<- -2
+				solve_ok <- -2
 				solvesys <- 0
 				print("chol: Schur complement matrix not pos. def.")
 			}
@@ -143,7 +152,7 @@ linsysolve = function(schur,UU,Afree,EE,rhs){
 			qmr <- symqmr(coeff,rhs,L)
 			xx <- qmr$xx
 			resnrm <- qmr$resnrm
-			solve_ok <<- qmr$solve_ok
+			solve_ok <- qmr$solve_ok
 			if ((solve_ok<=0) & (printlevel))
 				print(c("warning: symqmr fails:",solve_ok)) 
 			if(printlevel>=3)
@@ -151,11 +160,11 @@ linsysolve = function(schur,UU,Afree,EE,rhs){
 		}
 		if((solve_ok < 0)|(solvesys == 0)){
 			if (m < 5000){ 
-				use_LU <<- 1
+				use_LU <- 1
 				if (printlevel)
 					print("switch to LU factor") 
 			}else if(solve_ok==-0.5){
-				solve_ok <<- 1 
+				solve_ok <- 1 
 			}
 		}
 	}
@@ -164,16 +173,16 @@ linsysolve = function(schur,UU,Afree,EE,rhs){
 	if(use_LU){
 		nnzmat <- nnzero(coeff$mat11)+nnzero(coeff$mat12) 
 		nnzmatdiff <- (nnzmat != nnzmatold)  
-		solve_ok <<- 1 
+		solve_ok <- 1 
 		if(!is.null(coeff$mat22))
 			raugmat <- rBind(cBind(coeff$mat11,coeff$mat12),
 					cBind(tt(coeff$mat12),coeff$mat22)) 
 		else
 			raugmat <- coeff$mat11 
 		if((nnzmat > spdensity*m^2) | ((m+ncolU) < 500)) 
-			matfct_options <<- "lu"     
+			matfct_options <- "lu"     
 		else
-			matfct_options <<- "splu"
+			matfct_options <- "splu"
 		if(printlevel)
 			print(matfct_options)
 		if(matfct_options=="lu"){
@@ -209,13 +218,20 @@ linsysolve = function(schur,UU,Afree,EE,rhs){
 		xxA <- mybicgstab(coeff,rhs,L)
 		xx <- xxA$xx
 		resnrm <- xxA$resnrm
-		solve_ok <<- xxA$solve_ok
+		solve_ok <- xxA$solve_ok
 		if((solve_ok<=0) & (printlevel))
 			print(c("warning: mybicgstab fails: ",solve_ok))
 		if (printlevel>=3)
 			print(length(resnrm)-1)
 	}
-	nnzmatold <<- nnzmat 
-	matfct_options_old <<- matfct_options
-	return(list(xx=xx,coeff=coeff,L=L))
+	nnzmatold <- nnzmat 
+	matfct_options_old <- matfct_options
+
+        global_var$use_LU = use_LU
+        global_var$solve_ok = solve_ok
+        global_var$nnzmatold = nnzmatold
+        global_var$matfct_options = matfct_options
+        global_var$matfct_options_old = matfct_options_old
+
+	return(list(xx=xx,coeff=coeff,L=L,global_var=global_var))
 }

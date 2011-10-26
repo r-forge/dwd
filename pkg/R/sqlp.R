@@ -37,9 +37,9 @@
 
 sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 	
-	use_LU <<- 0
-	
-	nnzmatold <<- NULL
+        global_var = NULL
+	use_LU <- 0
+	nnzmatold <- NULL
 	
 	vers        <- 1
 	predcorr    <- 1
@@ -49,10 +49,10 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 	inftol      <- 1e-8
 	steptol     <- 1e-6
 	maxit       <- 100
-	printlevel  <<- 0
+	printlevel  <- 0
 	stoplevel   <- 1
 	plotyes     <- 1
-	spdensity   <<- 0.5
+	spdensity   <- 0.5
 	rmdepconstr <- 0
 	cachesize   <- 256
 	
@@ -65,28 +65,36 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 		inftol <- OPTIONS$inftol
 		steptol <- OPTIONS$steptol
 		maxit <- OPTIONS$maxit
-		printlevel <<- OPTIONS$printlevel
+		printlevel <- OPTIONS$printlevel
 		plotyes <- OPTIONS$plotyes
-		spdensity <<- OPTIONS$spdensity
+		spdensity <- OPTIONS$spdensity
 		rmdepconstr <- OPTIONS$rmdepconstr
 		cachesize <- OPTIONS$cachesize
 	}
 	X <- X0
 	y <- y0
-	
 	Z <- Z0  
 	
+        global_var$use_LU = use_LU
+        global_var$printlevel = printlevel
+        global_var$spdensity = spdensity
+        global_var$nnzmatold = nnzmatold
+        global_var$solve_ok = NULL
+        global_var$matfct_options = NULL
+        global_var$matfct_options_old = NULL
+
 	# validate SOCP data. 
 	
 	tstart <- proc.time()[3] 
-#	nargin <<- 7
-	validated <- validate(blk,At,C,b,X,y,Z)
+	validated <- validate(blk,At,C,b,X,y,Z,spdensity=spdensity)
 	At <- validated$At
 	C <- validated$C
 	dim <- validated$dim
 	numblk <- validated$numblk
 	X <- validated$X
 	Z <- validated$Z
+        global_var$spdensity = validated$spdensity
+
 	# convert unrestricted blk to
 	# linear blk.
 	
@@ -117,7 +125,8 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 	b <- checklinear$b
 	y <- checklinear$y
 	indeprows <- checklinear$idxB
-	depconstr <<- checklinear$ndepconstr
+	depconstr <- checklinear$ndepconstr
+        global_var$depconstr = depconstr
 	feasible <- checklinear$feasible
 	if (!feasible){
 		print("sqlp: SOCP is not feasible")
@@ -226,7 +235,7 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 	}
 	mupredhist <- NULL
 	for(iter in 1:maxit){  
-		iter <<- iter
+                global_var$iter = iter
 		
 		update_iter <- 0
 		breakyes <- 0
@@ -247,7 +256,7 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 				sigma <- 0.5
 		}
 		sigmu <- sigma*mu
-		ntpredict <- NTpred(blk,A,rp,Rd,sigmu,X,Z)
+		ntpredict <- NTpred(blk,A,rp,Rd,sigmu,X,Z,global_var)
 		par <- ntpredict$par
 		dX <- ntpredict$dX
 		dy <- ntpredict$dy
@@ -255,6 +264,8 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 		coeff <- ntpredict$coeff
 		L <- ntpredict$L
 		hRd <- ntpredict$hRd
+                global_var = ntpredict$global_var
+                solve_ok = global_var$solve_ok
 		
 		if (solve_ok <= 0){
 			runhist$cputime[iter+1] <- proc.time()[3]-tstart
@@ -340,10 +351,12 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 			sigma <- min( 1, (mupred/mu)^expon_used ) 
 			sigmu <- sigma*mu 
 			
-			ntcorrt <- NTcorr(blk,A,par,rp,Rd,sigmu,hRd,dX,dZ,coeff,L,X,Z)
+			ntcorrt <- NTcorr(blk,A,par,rp,Rd,sigmu,hRd,dX,dZ,coeff,L,X,Z,global_var)
 			dX <- ntcorrt$dX
 			dy <- ntcorrt$dy
 			dZ <- ntcorrt$dZ
+                        global_var = ntcorrt$global_var
+                        solve_ok = global_var$solve_ok
 			if (solve_ok <= 0){
 				runhist$cputime[iter+1] <- proc.time()[3]-tstart 
 				termcode <- -4
@@ -651,7 +664,7 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 	nnorm$X <- ops(X,'norm')
 	nnorm$y <- norm(y)
 	nnorm$Z <- ops(Z,'norm') 
-	sqlpsummary(runhist,ttime,termcode,resid,reldist,nnorm)
+	sqlpsummary(runhist,ttime,termcode,resid,reldist,nnorm,global_var)
 	return(list(obj=obj,X=X,y=y,Z=Z,info=info,runhist=runhist))  
 }
 

@@ -41,8 +41,8 @@ sqlpmisc=function(blk,A,At,C,b,X,y,Z,param){
       homRd <- ZpATynorm/obj[2]
       if (homRd < err){
         iflag <- 1
-        fprintf(c("pri_inf,dual_inf,rel_gap =",
-                  prim_infeas,dual_infeas,rel_gap))
+        print(c("pri_inf,dual_inf,rel_gap =",
+                prim_infeas,dual_infeas,rel_gap))
         termcode <- 1
       }
     }else if (obj[1] < 0){

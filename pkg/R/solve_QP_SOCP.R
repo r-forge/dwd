@@ -21,8 +21,8 @@ solve_QP_SOCP <- function(Dmat,dvec,Amat,bvec){
 	C[[1]] = c
 	C[[2]] = matrix(0,n,1)
 	OPTIONS <- sqlparameters()
-	spdensity <<- NULL
-	initial <- infeaspt(blk,Avec,C,b)
+	spdensity <- NULL
+	initial <- infeaspt(blk,Avec,C,b,spdensity=spdensity)
 	X0 <- initial$X0
 	lambda0 <- initial$y0
 	Z0 <- initial$Z0

@@ -9,10 +9,10 @@
 ## Last Modified: 15 Sep 2004
 ##***********************************************************************
 
-validate=function(blk,At,C,b,X0,y0,Z0){
+validate=function(blk,At,C,b,X0,y0,Z0,spdensity){
 	
 	if(is.null(spdensity))
-		spdensity <<- 0.5
+		spdensity <- 0.5
 	
 	m <- length(b)  
 	for(p in 1:length(blk$type)){
@@ -34,7 +34,7 @@ validate=function(blk,At,C,b,X0,y0,Z0){
 				if(is(C[[p]],"sparseMatrix"))
 					C[[p]] <- as(C[[p]],"denseMatrix")
 			}
-			if (nargs()==7){
+			if (nargs()==8){
 				if(!all(c(dim(X0[[p]])[2],dim(Z0[[p]])[2])==1))
 					print(paste("validate: ",as.character(p),
 									"-th block of X0,Z0 must be column vectors",sep=""))
@@ -82,8 +82,10 @@ validate=function(blk,At,C,b,X0,y0,Z0){
 			nn[p] <- sum(blk$size[[p]]) 
 		}
 	}
-	if(nargs()==4)
-		return(list(At=At,C=C,dim=dim,numblk=numblk))
-	else if(nargs()==7)
-		return(list(At=At,C=C,dim=dim,numblk=numblk,X=X0,Z=Z0))
+	if(nargs()==5)
+		return(list(At=At,C=C,dim=dim,numblk=numblk,
+                            spdensity=spdensity))
+	else if(nargs()==8)
+		return(list(At=At,C=C,dim=dim,numblk=numblk,
+                            X=X0,Z=Z0,spdensity=spdensity))
 }

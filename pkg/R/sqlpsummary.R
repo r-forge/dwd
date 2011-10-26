@@ -7,8 +7,9 @@
 ## Last Modified: 15 Sep 2004
 ##*****************************************************************************
 
-sqlpsummary = function(runhist,ttime,termcode,resid,reldist,nnorm) {
+sqlpsummary = function(runhist,ttime,termcode,resid,reldist,nnorm,global_var){
 
+  printlevel = global_var$printlevel
   iter <- length(runhist$pobj)-1; 
   obj  <- rbind(runhist$pobj[iter+1],runhist$dobj[iter+1])
   gap  <- runhist$gap[iter+1]  

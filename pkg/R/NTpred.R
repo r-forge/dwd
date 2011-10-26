@@ -7,7 +7,7 @@
 ## Last Modified: 15 Sep 2004
 ##**********************************************************************
 
-NTpred = function(blk,A,rp,Rd,sigmu,X,Z){
+NTpred = function(blk,A,rp,Rd,sigmu,X,Z,global_var){
 	
 	# compute NT scaling matrix
 	
@@ -59,13 +59,15 @@ NTpred = function(blk,A,rp,Rd,sigmu,X,Z){
 	
 	# solve linear system
 	
-	linsolvef <- linsysolve(schur,UU,Afree,EE,rhs)
+	linsolvef <- linsysolve(schur,UU,Afree,EE,rhs,global_var)
 	xx <- linsolvef$xx
 	coeff <- linsolvef$coeff
 	L <- linsolvef$L
+        global_var = linsolvef$global_var
+
 	# compute (dX,dZ)
 	
-	ntdirf <- NTdirfun(blk,A,par,Rd,EinvRc,xx)
-	return(list(par=par,dX=ntdirf$dX,dy=ntdirf$dy,
-					dZ=ntdirf$dZ,coeff=coeff,L=L,hRd=hRd))
+	ntdirf <- NTdirfun(blk,A,par,Rd,EinvRc,xx,global_var)
+	return(list(par=par,dX=ntdirf$dX,dy=ntdirf$dy,dZ=ntdirf$dZ,
+                    coeff=coeff,L=L,hRd=hRd,global_var=ntdirf$global_var))
 }

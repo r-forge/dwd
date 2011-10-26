@@ -76,8 +76,8 @@ sepelimdwd = function(Xp,Xn,penalty){
 	
 #	library(Matrix)
 	OPTIONS <- sqlparameters()
-	spdensity <<- NULL
-	initial <- infeaspt(blk,Avec,C,b)
+	spdensity <- NULL
+	initial <- infeaspt(blk,Avec,C,b,spdensity=spdensity)
 	X0 <- initial$X0
 	lambda0 <- initial$y0
 	Z0 <- initial$Z0
@@ -105,14 +105,14 @@ sepelimdwd = function(Xp,Xn,penalty){
 	}
 	beta = X1[dnew + 2] - X1[dnew + 3] - X2[1] - t(col1)%*%barw
 	
-	normw = norm(w)
+	normw = normsvd(w)
 	if (normw < 1 - 1e-3){
 		print(normw)
 	}
 	normwm1 = 0
 	if (normw > 1 - 1e-3){
 		w = w/normw
-		normwm1 = norm(w) - 1
+		normwm1 = normsvd(w) - 1
 		beta = beta/normw
 	}
 	
@@ -160,7 +160,7 @@ sepelimdwd = function(Xp,Xn,penalty){
 	minalp = min(alp)
 	p = RpnY%*%alp
 	
-	eta = -1*norm(p)
+	eta = -1*normsvd(p)
 	
 	gamma = 2*sqrt(alp)
 	dualobj = eta + sum(gamma)
@@ -201,11 +201,11 @@ DWD1SM = function(trainp,trainn,threshfact=100){
 	if (flag == -2){
 		cat("Infeasible or unbounded optimization problem!\n")
 	}
-	dirvec = w/norm(w)
+	dirvec = w/normsvd(w)
 	return(list(w=dirvec,beta=beta,alp=sepelimout$alp))
 }
 
-norm = function(aMatrix){
+normsvd = function(aMatrix){
 	##Reqturns the largest singular value of aMatrix
 	o = svd(aMatrix,nu=0,nv=0)
 	return(o$d[1])
