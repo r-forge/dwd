@@ -36,7 +36,7 @@ infeaspt=function(blk,At,C,b,options,scalefac,spdensity){
       if(blk$type[p]=="q"){
         s <- 1+c(0,cumsum(blktmp))
         len <- length(blktmp)
-        normC <- 1+norm(C[[p]])
+        normC <- 1+normsvd(C[[p]])
         normA <- 1+sqrt(apply(At[[p]]*At[[p]],2,sum))
         idenqX <- zeros(sum(blktmp),1)
         idenqX[s[1:len]] <- sqrt(t(blktmp))
