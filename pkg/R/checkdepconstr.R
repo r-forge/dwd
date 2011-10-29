@@ -38,7 +38,7 @@ checkdepconstr =  function(blk,At,b,y,rmdepconstr){
 
   if(!is(AAt,"sparseMatrix"))
     AAt <- as(AAt,"sparseMatrix")
-  pertdiag <- 1e-16*norm(AAt,"f")*ones(m,1)
+  pertdiag <- 1e-16*normsvd(AAt)*ones(m,1)
   AAt <- AAt + Diagonal(m,pertdiag)
   mychol <- Cholesky(AAt)
   if (class(mychol)=="try-error"){
@@ -137,7 +137,7 @@ findcoeff=function(blk,At,idxB,idxN){
   rhs  <- P%*%AN
   Lhat <- L[1:n,] 
   W <- Q%*%solve(U)%*%solve(Lhat)%*%rhs[1:n,]
-  nnorm <- norm(AN-AB%*%W,"f")/max(1,norm(AN,"f"))
+  nnorm <- normsvd(AN-AB%*%W)/max(1,normsvd(AN))
   if (nnorm > tol) 
     print("\n findcoeff: basis rows may be identified incorrectly.")
   return(W)
