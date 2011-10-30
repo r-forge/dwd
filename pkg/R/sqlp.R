@@ -108,7 +108,7 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 			At[[p]] <- rbind(At[[p]],-At[[p]])       
 			C[[p]] <- rbind(C[[p]],-C[[p]])
 			b2 <- 1 + abs(t(b))  
-			normC <- 1+norm(C[[p]])
+			normC <- 1+normsvd(C[[p]])
 			normA <- 1+sqrt(apply(At[[p]]*At[[p]],2,sum))
 			X[[p]] <- max(1,max(b2/normA))*ones(n,1)
 			Z[[p]] <- max(1,max(c(normA,normC))/sqrt(n))*ones(n,1)
@@ -139,7 +139,7 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 		A[[p]] <- tt(At[[p]])
 	}
 	
-	normb <- norm(b)
+	normb <- normsvd(b)
 	
 #	nargin <<- 2
 	normC <- ops(C,'norm')
@@ -163,7 +163,7 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 	gap <- blktrace(blk,X,Z)[1,1]  
 	mu <- gap/n  
 	rel_gap <- gap/(1+mean(abs(obj)))
-	prim_infeas <- norm(rp)/(1+normb)
+	prim_infeas <- normsvd(rp)/(1+normb)
 #	nargin <<- 2
 	dual_infeas <- ops(Rd,'norm')/(1+normC)
 	infeas_meas <- max(prim_infeas,dual_infeas)
@@ -439,7 +439,7 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 					break                        
 			}
 			AXtmp <- AX + pstep*AXfun(blk,A,dX)
-			prim_infeasnew <- norm(b-AXtmp)/(1+normb)
+			prim_infeasnew <- normsvd(b-AXtmp)/(1+normb)
 			if(any(as.integer(indef))){
 				if (printlevel){
 					print(" Stop: X, Z not both positive definite")
@@ -499,7 +499,7 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 		Rd <- ops(C,'-',ZpATy)
 		obj <- c(blktrace(blk,C,X)[1,1],  t(b)%*%y)
 		rel_gap <- gap/(1+mean(abs(obj)))
-		prim_infeas <- norm(rp)/(1+normb)
+		prim_infeas <- normsvd(rp)/(1+normb)
 #		nargin <<- 2
 		dual_infeas <- ops(Rd,'norm')/(1+normC)
 		infeas_meas <- max(prim_infeas,dual_infeas)
@@ -533,7 +533,7 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 			termcode <- 1
 			breakyes <- 1
 		}
-		if (-obj[1] > norm(AX) / max(inftol,1e-13)){
+		if (-obj[1] > normsvd(AX) / max(inftol,1e-13)){
 			termcode <- 2
 			breakyes <- 1
 		}
@@ -662,7 +662,7 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 	nnorm$C <- normC
 	nnorm$A <- normA 
 	nnorm$X <- ops(X,'norm')
-	nnorm$y <- norm(y)
+	nnorm$y <- normsvd(y)
 	nnorm$Z <- ops(Z,'norm') 
 	sqlpsummary(runhist,ttime,termcode,resid,reldist,nnorm,global_var)
 	return(list(obj=obj,X=X,y=y,Z=Z,info=info,runhist=runhist))  
