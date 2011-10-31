@@ -21,7 +21,7 @@ NTcorr = function(blk,A,par,rp,Rd,sigmu,hRd,dX,dZ,coeff,L,X,Z,global_var){
   rhs <- rbind(rhs,zeros(m+ncolU-length(rhs),1)) 
 
   solve_ok <- 1
-  resnrm <- norm(rhs)
+  resnrm <- normsvd(rhs)
   if((matfct_options=="chol")|(matfct_options=="spchol")){
     myqmr <-  symqmr(coeff,rhs,L)
     xx <- myqmr$xx

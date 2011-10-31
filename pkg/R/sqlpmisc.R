@@ -28,7 +28,7 @@ sqlpmisc=function(blk,A,At,C,b,X,y,Z,param){
 #  nargin <<- 2
   Anorm <- ops(A,"norm")
   xnorm <- ops(X,"norm")
-  ynorm <- norm(y)
+  ynorm <- normsvd(y)
 #  nargin <<- 3
   ZpATy <- ops(Z,"+",Atyfun(blk,At,y))
 #  nargin <<- 2
@@ -46,7 +46,7 @@ sqlpmisc=function(blk,A,At,C,b,X,y,Z,param){
         termcode <- 1
       }
     }else if (obj[1] < 0){
-      homrp <- norm(AX)/(-obj[1]) 
+      homrp <- normsvd(AX)/(-obj[1]) 
       if (homrp < err) {
         print(c(" pri_inf,dual_inf,rel_gap = ",
                 prim_infeas,dual_infeas,rel_gap))
@@ -69,8 +69,8 @@ sqlpmisc=function(blk,A,At,C,b,X,y,Z,param){
     tCX <- blktrace(blk,C,X)
 #    nargin <<- 3
     X <- ops(X,"*",1/(-tCX))
-    resid <- norm(AX)/(-tCX)
-    reldist <- norm(AX)/(Anorm*xnorm)
+    resid <- normsvd(AX)/(-tCX)
+    reldist <- normsvd(AX)/(Anorm*xnorm)
   }
   if (termcode == 3){
 #    nargin <<- 2

@@ -47,7 +47,7 @@ infeaspt=function(blk,At,C,b,options,scalefac,spdensity){
                                     2,max))
         Z0[[p]] <- idenqZ
       }else if(blk$type[p]=="l"){
-        normC <- 1+norm(C[[p]])
+        normC <- 1+normsvd(C[[p]])
         normA <- 1+sqrt(apply(At[[p]]*At[[p]],2,sum))
         X0[[p]] <- max(1,max(b2/normA))*ones(n,1);
         Z0[[p]] <- max(1,max(c(normA,normC))/sqrt(n))*ones(n,1);

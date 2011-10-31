@@ -26,12 +26,12 @@ mybicgstab=function(A,b,M1,tol,maxit){
   }
   if (nargs() < 4)
     tol = 1e-8
-  tolb <- min(1e-4,tol*norm(b))
+  tolb <- min(1e-4,tol*normsvd(b))
   flag <- 1
  
   x <- zeros(N,1) 
   r <- b - matvecsp(A,x)
-  err <- norm(r)
+  err <- normsvd(r)
   resnrm[1] <- err
   minresnrm <- err
   xx <- x  
@@ -74,7 +74,7 @@ mybicgstab=function(A,b,M1,tol,maxit){
 
     ## check convergence
 
-    err <- norm(r)
+    err <- normsvd(r)
     resnrm[it+1] <- err
     minresnrm <- min(minresnrm,err) 
     if (err < tolb)
