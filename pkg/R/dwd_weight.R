@@ -1,4 +1,3 @@
-
 sepelimdwd_weight = function(Xp,Xn,penalty,wgt){
 	
 	##Xp and Xn are matrices.  penalty is a scalar.  This is an
@@ -76,7 +75,6 @@ sepelimdwd_weight = function(Xp,Xn,penalty,wgt){
 	
 	##Solve the SOCP problem
 	
-#	library(Matrix)
 	OPTIONS <- sqlparameters()
 	spdensity <- NULL
 	initial <- infeaspt(blk,Avec,C,b,spdensity=spdensity)
@@ -211,6 +209,7 @@ DWD1SM_weight = function(trainp,trainn,threshfact=100,wgt=NULL){
 		cat("Infeasible or unbounded optimization problem!\n")
 	}
 	dirvec = w/normsvd(w)
+	beta = beta/normsvd(w)
 	return(list(w=dirvec,beta=beta,obj=obj))
 }
 

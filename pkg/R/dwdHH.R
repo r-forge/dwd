@@ -4,7 +4,6 @@
 # Author: Hanwen Huang
 ###############################################################################
 
-
 sepelimdwdHH = function(Xp,Xn,penalty){
 	
 	flag <- 0
