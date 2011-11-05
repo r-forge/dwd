@@ -35,6 +35,6 @@ data(promotergene)
 
 ## Create model using Distance Weighted Discrimination
 
-promsv <- kdwd(Class~.,data=promotergene,C=100,cross=4)
+\donttest{promsv <- kdwd(Class~.,data=promotergene,C=100,cross=4)}
 }
 \keyword{datasets}
