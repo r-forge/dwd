@@ -98,11 +98,11 @@
 data(promotergene)
 
 ## train a support vector machine
-gene <- kdwd(Class~.,data=promotergene,C=100,cross=4)
+\donttest{gene <- kdwd(Class~.,data=promotergene,C=100,cross=4)
 
 # the fitted values
 gene@fitted
 # the cross validation error
-gene@cross
+gene@cross}
 }
 \keyword{classes}

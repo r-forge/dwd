@@ -40,7 +40,7 @@ Class: 0 for non-musk, and 1 for musk
 \examples{
 data(musk)
 
-muskm <- kdwd(Class~.,data=musk,C=100)
+\donttest{muskm <- kdwd(Class~.,data=musk,C=100)}
 
 }
 \keyword{datasets}

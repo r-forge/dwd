@@ -142,11 +142,11 @@ C = 100, fit = TRUE, cross = 0, class.weights = NULL,
 	data(iris)
 
 	## train an OVO multiclass DWD
-	irismodel <- kdwd(Species~.,data=iris,type="bdwd",C=100,scaled=TRUE,cross=5)
+	\donttest{irismodel <- kdwd(Species~.,data=iris,type="bdwd",C=100,scaled=TRUE,cross=5)
 
 	## get fitted values
 	irismodel@fitted
 
 	## Test on the training set
-	predict(irismodel, iris)
+	predict(irismodel, iris)}
 }

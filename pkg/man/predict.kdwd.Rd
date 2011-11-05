@@ -45,10 +45,10 @@ genetrain <- promotergene[-ind, ]
 genetest <- promotergene[ind, ]
 
 ## train a distance weighted discrimination
-gene <- kdwd(Class~.,data=genetrain,C=100,cross=5,scaled=TRUE)
+\donttest{gene <- kdwd(Class~.,data=genetrain,C=100,cross=5,scaled=TRUE)
 gene@fitted
 
 ## predict gene type on the test set
 genetype <- predict(gene,genetest)
-genetype
+genetype}
 }
