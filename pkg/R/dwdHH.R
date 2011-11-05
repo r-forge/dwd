@@ -122,7 +122,6 @@ sepelimdwdHH = function(Xp,Xn,penalty){
 		beta = beta/normw
 	}
 	
-	
 	return(list(w=w,beta=beta,flag=flag,alp=lambda[1:n]))
 	
 }

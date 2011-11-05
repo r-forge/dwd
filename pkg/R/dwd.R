@@ -135,8 +135,8 @@ sepelimdwd = function(Xp,Xn,penalty){
 	minxi = min(xi)
 	maxxi = max(xi)
 	resn = res + xi
-	rresn = 1 / resn
-	primalobj = penalty * sum(xi) + sum(rresn)
+	rresn = 1/resn
+	primalobj = penalty*sum(xi) + sum(rresn)
 	##print(primalobj)
 	
 	

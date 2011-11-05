@@ -141,7 +141,6 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 	
 	normb <- normsvd(b)
 	
-#	nargin <<- 2
 	normC <- ops(C,'norm')
 	normA <- ops(A,'norm') 
 	normX0 <- ops(X0,'norm')
@@ -153,7 +152,6 @@ sqlp = function(blk,At,C,b,OPTIONS,X0,y0,Z0){
 	rp <- b-AX
 	
 	Aty <- Atyfun(blk,At,y)
-#	nargin <<- 3
 	ZpATy <- ops(Z,'+',Aty)
 #	nargin <<- 2
 	ZpATynorm <- ops(ZpATy,'norm')
