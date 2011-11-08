@@ -32,7 +32,7 @@ shown to be superior to, Support Vector Machine (SVM) in some high
 dimensional situations.  The key step in the implementation of DWD is
 to solve a Second Order Cone Programming (SOCP) problem. R/DWD also
 provides an efficient SOCP solver based on the interior point method
-originally developed by \cite{toh1999} for solving
+originally developed by Toh {\em et al.}, 1999 for solving
 semidefinite-quadratic-linear programming. In addition, an efficient
 Quadratic Programming solver based on the SOCP is also included in
 this package. We believe that this package will be very useful for
@@ -48,19 +48,19 @@ many aspects of bioinformatics research.
 
 The Support Vector Machine (SVM) is a well known machine learning
 technique and has achieved great success in bioinformatics
-applications (see \cite{byvatov2003} for a review). However,
-as shown in \cite{marron2007}, SVM suffers from the data
+applications (see Byvatov {\em et al.}, 2003 for a review). However,
+as shown in Marron {\em et al.}, 2007, SVM suffers from the data
 piling problem in High Dimensional Low Sample Size (HDLSS) situations.
 Distance Weighted Discrimination (DWD) is a recently developed
 classification method which was originally motivated for solving the
-HDLSS problems (\cite{marron2007}), but can be applied to many
+HDLSS problems (Marron {\em et al.}, 2007), but can be applied to many
 other examples as well. One of the big advantages of DWD over SVM is
 that it can overcome the data piling problem in high dimensional
 situations as illustrated in Figure \ref{dwdsvm}. The original DWD
-paper only described the implementation of
+paper (Marron {\em et al.}, 2007) only described the implementation of
 the binary classification method. The multiclass version of DWD has
-also been developed in \cite{huang2011}. It is suggested that
-users refer to these publications in order to understand the DWD
+also been developed in Huang {\em et al.}, 2011. It is suggested that
+all users refer to these publications in order to understand the DWD
 terminology and principles in greater detail.
 
 \begin{figure}[ht]
@@ -76,16 +76,20 @@ terminology and principles in greater detail.
   horizontal coordinate representing the projection, and with a random
   vertical coordinate used for visual separation of the points. The
   top left, top right, bottom left and bottom right are the
-  projections onto the true optimal, Maximum Data Piling (MDP, \cite{ahn2010}), SVM and DWD directions respectively. The DWD
+  projections onto the true optimal, Maximum Data Piling (MDP, Ahn
+  {\em et al.}, 2010), SVM and DWD directions respectively. The DWD
   direction is closer to the optimal direction than the SVM direction
   as indicated by both the kernel density estimation (solid curve) and
-  the calculated angle to the optimal direction. The MDP direction in HDLSS is illustrated by the top right plot.}
+  the calculated angle to the optimal direction. The Maximum Data
+  Piling direction in HDLSS is illustrated by the top right plot.}
 \end{center}
 \label{dwdsvm}
 \end{figure}
 
 DWD has been widely used in many bioinformatics areas including
-adjusting batch effects in microarray expression data (\cite{benito2004}) and discovering cancer subtypes (\cite{hu2006}). However, the existing DWD package was written in Matlab which
+adjusting batch effects in microarray expression data (Benito {\em et
+  al.}, 2004) and discovering cancer subtypes (Hu {\em et al.},
+2006). However, the existing DWD package was written in Matlab which
 is not a free software package. To make it more convenient for
 bioinformatics people to use, we have developed an R version of DWD
 here. R/DWD is based on the existing Matlab version
@@ -102,7 +106,8 @@ The implementation of DWD is more challenging than the implementation
 of SVM because it requires solving an optimization problem called
 Second Order Cone Programming (SOCP).  The DWD Matlab version employed
 a very efficient SOCP solver from the \texttt{SDPT3}
-(semidefinite-quadratic-linear programming) package developed by \cite{toh1999}. The \texttt{SDPT3} implemented an infeasible
+(semidefinite-quadratic-linear programming) package developed by Toh
+{\em et al.}, 1999. The \texttt{SDPT3} implemented an infeasible
 path-following algorithm for solving conic optimization problems
 involving semidefinite, second-order and linear cone constraints.
 
@@ -119,7 +124,7 @@ method.
 \subsection{Classification}
 Both SVM and DWD are margin-based classification methods in the sense
 that they build the classifier through finding a decision boundary to
-separate the classes (\cite{liu2011}). DWD uses a different
+separate the classes (Liu, {\em et al}, 2011). DWD uses a different
 criterion from SVM. It seeks to achieve the goal by maximizing the
 average distance rather than the minimum distance among the
 classes. Similar to the \texttt{ksvm} function from \texttt{kernlab},
@@ -155,7 +160,8 @@ The application of SOCP is not limited to DWD, it can be used to solve
 many other problems as well. The package \texttt{R/DWD} provides a
 stand-alone SOCP solver called \texttt{sqlp}. The algorithm
 implemented in \texttt{sqlp} is an infeasible primal-dual
-path-following algorithm, described in detail in \cite{toh1999}. The basic idea is that, at each iteration, we first compute a
+path-following algorithm, described in detail in Toh {\em et al.},
+1999. The basic idea is that, at each iteration, we first compute a
 predictor search direction aimed at decreasing the gap between the
 primal and dual objective values. After that, the algorithm generates
 a corrector step with the goal of keeping the iterations close to the
@@ -188,16 +194,16 @@ methods to handle missing values in the input file.
 
 \begin{thebibliography}{}
 
-\bibitem[Ahn, 2010]{ahn2010}Ahn J. and Marron J.S. (2010),
+\bibitem[Ahn, 2010]{ahn2011}Ahn J. and Marron J.S. (2010),
   \textit{The Maximal Data Piling Direction for Discrimination},
   Biometrika, 97(1):254-259
-\bibitem[Benito, 2004]{benito2004}Benito M., Parker J., Du Q., Wu J.,
-  Xiang D., Perou C.M., and Marron J.S.(2004), \textit{Adjustment of
-    systematic microarray data biases}, Bioinformatics 20 (1):
-  105-114.
 \bibitem[Byvatov, 2003]{byvatov2003}Byvatov E., Schneider G. (2003),
   \textit{Support vector machine applications in bioinformatics}, Appl
-  Bioinformatics, 2(2):67-77.
+  Bioinformatics. 2003;2(2):67-77.
+\bibitem[Benito, 2006]{benito2006}Benito M., Parker J., Du Q., Wu J.,
+  Xiang D., Perou C.M., and Marron J.S.(2004), \textit{Adjustment of
+    systematic microarray data biases}, Bioinformatics (2004) 20 (1):
+  105-114.
 \bibitem[Hu, 2006]{hu2006}Hu Z., Fan C., Oh D.S., Marron J.S., He X.,
   Qaqish B.F., Livasy C., Carey L.A., Reynolds E., Dressler L., Nobel
   A., Parker J., Ewend M.G., Sawyer L.R., Wu J., Liu Y., Nanda R.,
@@ -219,9 +225,9 @@ methods to handle missing values in the input file.
 \bibitem[Marron, 2007]{marron2007} Marron J.S., Todd M.J. and Ahn J.,
   (2007), \textit{Distance-Weighted Discrimination}. Journal of the
   American Statistical Association, Vol. 102, No. 480, pp. 1267-1271.
-\bibitem[Toh, 1999]{toh1999}Toh K.C., Todd M.J., and Tutuncu R.H. (1999).
+\bibitem[Toh, 1999]{toh1999}Toh K.C., Todd M.J., and Tutuncu R.H.,
   \textit{SDPT3 --- a Matlab software package for semidefinite
-    programming}, Optimization Methods and Software, 11,
+    programming}, Optimization Methods and Software, 11 (1999),
   pp. 545--581.
 %\bibitem[Turlach, 2011]{turlach}Turlach B.A., \textit{quadprog:
 %  Functions to solve Quadratic Programming Problems}, CRAN - Package
