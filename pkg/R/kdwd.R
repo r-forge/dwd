@@ -283,6 +283,7 @@ setMethod("kdwd",signature(x="matrix"),
             ## in case of classification: transform factors into integers
             if (is.factor(y)) {
               lev(ret) <- levels(y)
+              ybuf = y		
               y <- as.integer(y)
             }else {
               lev(ret) <- sort(unique(y))
@@ -343,7 +344,7 @@ setMethod("kdwd",signature(x="matrix"),
               scaling(ret) <- NULL
             
             if (fit){
-              error(ret) <- 1 - .classAgreement(table(as.factor(y),fitted(ret)))
+              error(ret) <- 1 - .classAgreement(table(as.factor(ybuf),fitted(ret)))
             }
             
             cross(ret) <- -1
