@@ -61,10 +61,12 @@ sepelimdwd_weight = function(Xp,Xn,penalty,wgt){
 	Avec[[1]] = t(A)
 	Avec[[2]] = (rbind(cbind(-1*ym,speye(n-1)),zeros(1+n,n)))
 	b = rbind(zeros(n-1,1),ones(1+n,1))	
-	if(is.null(wgt))
+	if(is.null(wgt)){
 		weight = rbind(2*np/n*ones(np,1),2*nn/n*ones(nn,1))
-	else
+		weight = rbind(ones(np,1),ones(nn,1))
+	}else{
 		weight = rbind(wgt[1]*ones(np,1),wgt[2]*ones(nn,1))
+        }
 	C = list()
 	c = zeros(nv-n,1)
 	c[seq(dnew+2,dnew+1+3*n,3),1] = weight
