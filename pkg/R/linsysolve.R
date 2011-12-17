@@ -39,7 +39,7 @@ linsysolve = function(schur,UU,Afree,EE,rhs,global_var){
 			diagschur[which(diagschur<1)] <- 1
 		else
 			diagschur[which(diagschur<1e-4)] <- 1e-4      
-		diagschur <- 1e-9*diagschur
+		diagschur <- 1e-6*diagschur
 		pertdiag <- as(diag(diagschur),"denseMatrix")
 		#mexschurfun(schur,pertdiag,2) 
 		schur <- schur + pertdiag
